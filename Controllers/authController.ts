@@ -10,9 +10,13 @@ export const register = async (req:Request, res: Response) => {
       lastName,
       email,
       password,
-      picturePath,
       friends
     } = req.body
+
+    let picturePath =''
+    if(req.file){
+      picturePath = req.file.filename;
+    }
 
     const newUser = new User({
       firstName,

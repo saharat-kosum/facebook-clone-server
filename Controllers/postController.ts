@@ -4,7 +4,13 @@ import { Request, Response } from 'express';
 
 export const createPost = async (req:Request , res:Response) => {
   try{
-    const { userId, description, picturePath} = req.body
+    const { userId, description} = req.body
+    
+    let picturePath =''
+    if(req.file){
+      picturePath = req.file.filename;
+    }
+
     const user = await User.findById(userId)
     const newPost = new Post({
       userId,
