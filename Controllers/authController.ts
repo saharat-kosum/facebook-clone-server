@@ -5,13 +5,15 @@ import jwt from "jsonwebtoken"
 
 export const register = async (req:Request, res: Response) => {
   try {
+    const userData = JSON.parse(req.body.userData);
     const {
       firstName,
       lastName,
       email,
       password,
+      dateOfBirth,
       friends
-    } = req.body
+    } = userData
 
     let picturePath =''
     if(req.file){
@@ -23,6 +25,7 @@ export const register = async (req:Request, res: Response) => {
       lastName,
       email,
       password,
+      dateOfBirth,
       picturePath,
       friends
     })

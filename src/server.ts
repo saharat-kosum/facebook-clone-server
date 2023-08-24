@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'))
 app.use(helmet())
 // app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }))
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
 
 //connect database
 if(process.env.DATABASE){
