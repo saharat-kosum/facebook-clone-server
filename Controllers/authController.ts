@@ -12,6 +12,8 @@ export const register = async (req:Request, res: Response) => {
       email,
       password,
       dateOfBirth,
+      occupation,
+      location,
       friends
     } = userData
 
@@ -27,6 +29,8 @@ export const register = async (req:Request, res: Response) => {
       password,
       dateOfBirth,
       picturePath,
+      occupation,
+      location,
       friends
     })
 

@@ -23,6 +23,14 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  occupation: {
+    type: String,
+    required: true
+  },
+  location: {
+    type: String,
+    required: true
+  },
   picturePath: {
     type: String,
     default: ""
