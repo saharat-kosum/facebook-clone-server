@@ -14,6 +14,7 @@ export const verifyToken = async (req: Request, res:Response, next: NextFunction
       const token = header.slice(7)
       if(process.env.JWT_SECRET){
         const verified = jwt.verify(token, process.env.JWT_SECRET)
+        res.locals.id = verified
         next()
       }
     }
