@@ -4,8 +4,8 @@ import { Request, Response } from 'express';
 
 export const createPost = async (req:Request , res:Response) => {
   try{
-    const { userId, description} = req.body
-    
+    const postData = JSON.parse(req.body.postData);
+    const { userId, description} = postData
     let picturePath =''
     if(req.file){
       picturePath = req.file.filename;
