@@ -43,6 +43,23 @@ export const getFeedPosts = async (req:Request , res:Response) => {
   }
 }
 
+export const deletePost = async (req:Request , res:Response) => {
+  try{
+    const { _id } = req.params
+    const deletePosts = await Post.deleteOne({_id})
+    if(deletePosts.deletedCount === 1){
+      const posts = await Post.find()
+      res.status(200).json(posts)
+    }else{
+      res.status(404).json({ message: 'Post not found' })
+    }
+  }
+  catch (err) {
+    console.error('Delete post failed: ', err)
+    res.status(400).json({error : 'Delete post failed'})
+  }
+}
+
 export const getUserPosts = async (req:Request , res:Response) => {
   try{
     const { userId } = req.params
