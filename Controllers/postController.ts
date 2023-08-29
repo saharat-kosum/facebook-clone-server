@@ -72,16 +72,42 @@ export const getUserPosts = async (req:Request , res:Response) => {
   }
 }
 
+export const commentPost = async (req:Request , res:Response) => {
+  try{
+    const { id } = req.params
+    const { firstName, lastName, userPicturePath, description } = req.body;
+    const newComment = {
+      firstName,
+      lastName,
+      userPicturePath,
+      description,
+    };
+    const post = await Post.findById(id)
+
+    if(post){
+      post.comments.push(newComment)
+      const updatedPost = await post.save()
+      res.status(200).json(updatedPost)
+    }else{
+      res.status(404).json({ error: 'Post not found' })
+    }
+  }
+  catch (err) {
+    console.error('Cant comment : ', err)
+    res.status(400).json({error : 'Cant comment'})
+  }
+}
+
 export const likePost =async (req:Request , res:Response) => {
   try{
     const { userId } = req.body
     const { id } = req.params
     const post = await Post.findById(id)
-    
+
     if(post){
       const isLiked = post.likes.includes(userId)
       if(isLiked){
-        post.likes = post.likes.filter((id) => id !== userId)
+        post.likes = post.likes.filter((id) => id.toString() !== userId)
       }else{
         post.likes.push(userId)
       }
