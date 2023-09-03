@@ -33,7 +33,13 @@ export const createPost = async (req:Request , res:Response) => {
 
 export const getFeedPosts = async (req:Request , res:Response) => {
   try{
-    const posts = await Post.find()
+    const { id } = res.locals.id
+    const user = await User.findById(id)
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const friendIds = user.friends.concat(id);
+    const posts = await Post.find({ userId: { $in: friendIds } })
     res.status(200).json(posts)
   }
   catch (err) {
