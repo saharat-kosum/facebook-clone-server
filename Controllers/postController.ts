@@ -23,8 +23,7 @@ export const createPost = async (req:Request , res:Response) => {
       comments: []
     })
     await newPost.save()
-    const post = await Post.find()
-    res.status(200).json(post)
+    res.status(200).json(newPost)
   }
   catch (err) {
     console.error('Create post error: ', err)
@@ -48,8 +47,7 @@ export const deletePost = async (req:Request , res:Response) => {
     const { _id } = req.params
     const deletePosts = await Post.deleteOne({_id})
     if(deletePosts.deletedCount === 1){
-      const posts = await Post.find()
-      res.status(200).json(posts)
+      res.status(200).json(deletePosts)
     }else{
       res.status(404).json({ message: 'Post not found' })
     }

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import User from "../Models/UserModel"
 import { Request, Response } from 'express';
 
@@ -38,6 +39,26 @@ export const getUserFriends = async (req:Request, res: Response) => {
   }
 }
 
+export const getUserSuggest = async (req:Request, res: Response) => {
+  try{
+    const { id } = res.locals.id
+    const user = await User.findById(id)
+    if (user && user.friends) {
+      const nonFriends = await User.find({ _id: { $nin: [...user.friends, id] } });
+      const shuffledNonFriends = shuffleArray(nonFriends);
+      const limit = 3;
+      const randomNonFriends = shuffledNonFriends.slice(0, limit);
+      res.status(200).json(randomNonFriends);
+    } else {
+      res.status(200).json([]);
+    }
+  }
+  catch (err) {
+    console.error('Get user friends error: ', err)
+    res.status(404).json({error : 'Get user friends error'})
+  }
+}
+
 export const addRemoveFriend = async (req:Request, res: Response) => {
   try{
     const { id ,friendId } = req.params
@@ -64,4 +85,12 @@ export const addRemoveFriend = async (req:Request, res: Response) => {
     console.error('Add/Remove friend error: ', err)
     res.status(404).json({error : 'Add/Remove friend error'})
   }
+}
+
+function shuffleArray(array: any[]) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 }
