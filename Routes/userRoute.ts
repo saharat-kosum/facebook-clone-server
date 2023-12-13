@@ -4,7 +4,8 @@ import {
   getUserFriends,
   addRemoveFriend,
   getFriendData,
-  getUserSuggest
+  getUserSuggest,
+  searchUser
 } from "../Controllers/userController"
 import { verifyToken } from "../middleware/authMiddleware"
 
@@ -15,5 +16,6 @@ router.get("/suggest/friends", verifyToken, getUserSuggest)
 router.get("/friend/:id", verifyToken, getFriendData)
 router.get("/:id/friends", verifyToken, getUserFriends)
 router.put("/:id/:friendId", verifyToken, addRemoveFriend)
+router.get("/search", verifyToken, searchUser)
 
 export default router

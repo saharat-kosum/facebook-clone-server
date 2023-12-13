@@ -87,6 +87,31 @@ export const addRemoveFriend = async (req:Request, res: Response) => {
   }
 }
 
+export const searchUser = async (req: Request, res: Response) => {
+  try{
+    const userName = req.query.search as string
+    console.log("userName :", userName)
+    if (!userName) {
+      res.status(400).json({error: 'Query search is required'})
+    }
+
+    const regex = new RegExp(userName, 'i')
+
+    const users = await User.find({
+      $or: [
+        { firstName: { $regex: regex } },
+        { lastName: { $regex: regex } }
+      ]
+    })
+
+    res.status(200).json({ users })
+  }
+  catch (err) {
+    console.error('Search user error: ', err)
+    res.status(404).json({error : 'Search user error'})
+  }
+}
+
 function shuffleArray(array: any[]) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
