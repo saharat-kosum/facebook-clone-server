@@ -90,7 +90,6 @@ export const addRemoveFriend = async (req:Request, res: Response) => {
 export const searchUser = async (req: Request, res: Response) => {
   try{
     const userName = req.query.search as string
-    console.log("userName :", userName)
     if (!userName) {
       res.status(400).json({error: 'Query search is required'})
     }

@@ -24,3 +24,20 @@ export const verifyToken = async (req: Request, res:Response, next: NextFunction
     res.status(500).json({error : 'Internal server error'})
   }
 }
+
+export const verifyTokenWs = (token: string) => {
+  try {
+    if(process.env.JWT_SECRET){
+      const verified = jwt.verify(token, process.env.JWT_SECRET)
+      if (typeof verified === 'string') {
+        console.error('Token verification failed:', verified);
+      } else {
+        const { id } = verified
+        return id
+      }
+    }
+  }
+  catch (err) {
+    console.error('Verify Token error: ', err)
+  }
+}

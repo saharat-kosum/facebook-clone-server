@@ -11,8 +11,12 @@ import { createPost } from "../Controllers/postController";
 import authRoutes from "../Routes/authRoute"
 import userRoutes from "../Routes/userRoute"
 import postRoutes from "../Routes/postRoute"
-import { verifyToken } from "../middleware/authMiddleware";
+import { verifyToken, verifyTokenWs } from "../middleware/authMiddleware";
 import path from "path";
+import User from "../Models/UserModel";
+import Post from "../Models/PostModel";
+import { posts, users } from "../data/mock";
+import ws from 'ws';
 
 dotenv.config()
 const app = express()
@@ -56,6 +60,31 @@ app.use('/users', userRoutes)
 app.use('/posts', postRoutes)
 
 const port = process.env.PORT || 8080
-app.listen(port, ()=>{
+const server = app.listen(port, ()=>{
   console.log(`Start server at port : ${port}`)
+  // User.insertMany(users);
+  // Post.insertMany(posts);
+})
+const wss = new ws.WebSocketServer({ server })
+
+wss.on('connection', (connection, req) => {
+  if (req.url) {
+    const token = req.url.split('=')[1]
+    const userId = verifyTokenWs(token)
+    if (userId) {
+      console.log('wss connect id:', userId)
+    } else {
+      connection.on('close', () => {
+        console.log('wss connection unauthorized. Closing connection.');
+      });
+    }
+  
+    connection.on('close', () => {
+      console.log('wss disconnected');
+    });
+  } else {
+    connection.on('close', () => {
+      console.log('wss connection unauthorized. Closing connection.');
+    });
+  }
 })
