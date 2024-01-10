@@ -15,7 +15,7 @@ import { verifyToken, verifyTokenWs } from "../middleware/authMiddleware";
 import path from "path";
 import User from "../Models/UserModel";
 import Post from "../Models/PostModel";
-import { posts, users } from "../data/mock";
+// import { posts, users } from "../data/mock";
 import ws from 'ws';
 
 dotenv.config()
@@ -67,24 +67,29 @@ const server = app.listen(port, ()=>{
 })
 const wss = new ws.WebSocketServer({ server })
 
+const clients = new Map<string, ws>();
+
 wss.on('connection', (connection, req) => {
-  if (req.url) {
+  if (req.url && req.url.includes('=')) {
     const token = req.url.split('=')[1]
     const userId = verifyTokenWs(token)
     if (userId) {
       console.log('wss connect id:', userId)
-    } else {
-      connection.on('close', () => {
-        console.log('wss connection unauthorized. Closing connection.');
+      clients.set(userId, connection)
+      // Add message event listener
+      connection.on('message', (data) => {
+        console.log(`Received message from user ${userId}: ${data}`);
+        
+        // You can add your message handling logic here
       });
+    } else {
+      connection.close();
     }
-  
-    connection.on('close', () => {
-      console.log('wss disconnected');
-    });
   } else {
-    connection.on('close', () => {
-      console.log('wss connection unauthorized. Closing connection.');
-    });
+    connection.close();
   }
+
+  connection.on('close', () => {
+    console.log('wss disconnected');
+  });
 })
