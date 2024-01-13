@@ -17,6 +17,7 @@ import User from "../Models/UserModel";
 import Post from "../Models/PostModel";
 // import { posts, users } from "../data/mock";
 import ws from 'ws';
+import { WsMessagePayload } from "../Type";
 
 dotenv.config()
 const app = express()
@@ -76,12 +77,23 @@ wss.on('connection', (connection, req) => {
     if (userId) {
       console.log('wss connect id:', userId)
       clients.set(userId, connection)
+
       // Add message event listener
-      connection.on('message', (data) => {
-        console.log(`Received message from user ${userId}: ${data}`);
-        
-        // You can add your message handling logic here
+      connection.on('message', (data: string) => {
+        const {message , targetUser} = JSON.parse(data) as WsMessagePayload
+        console.log(`Received message from user ${userId}: ${message}`);
+        if (message && targetUser) {
+          const targetSocket = clients.get(targetUser)
+          if (targetSocket) {
+            const sendPayload = {
+              sender: userId,
+              message: message
+            }
+            targetSocket.send(JSON.stringify(sendPayload))
+          }
+        }
       });
+      
     } else {
       connection.close();
     }

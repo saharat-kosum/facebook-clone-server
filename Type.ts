@@ -14,3 +14,8 @@ export interface Friend {
   lastName: String
   picturePath: String
 }
+
+export interface WsMessagePayload {
+  targetUser: string;
+  message: string;
+}
