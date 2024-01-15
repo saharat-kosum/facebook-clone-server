@@ -11,13 +11,15 @@ import { createPost } from "../Controllers/postController";
 import authRoutes from "../Routes/authRoute"
 import userRoutes from "../Routes/userRoute"
 import postRoutes from "../Routes/postRoute"
+import chatHistoryRoutes from "../Routes/chatHistoryRoute"
 import { verifyToken, verifyTokenWs } from "../middleware/authMiddleware";
 import path from "path";
 import User from "../Models/UserModel";
 import Post from "../Models/PostModel";
 // import { posts, users } from "../data/mock";
 import ws from 'ws';
-import { WsMessagePayload } from "../Type";
+import { ChatHistoryType } from "../Type";
+import ChatHistory from "../Models/ChatHistoryModel";
 
 dotenv.config()
 const app = express()
@@ -59,6 +61,7 @@ app.post("/posts", verifyToken, upload.single('file'), createPost)
 app.use('/auth', authRoutes)
 app.use('/users', userRoutes)
 app.use('/posts', postRoutes)
+app.use('/chats', chatHistoryRoutes)
 
 const port = process.env.PORT || 8080
 const server = app.listen(port, ()=>{
@@ -79,16 +82,18 @@ wss.on('connection', (connection, req) => {
       clients.set(userId, connection)
 
       // Add message event listener
-      connection.on('message', (data: string) => {
-        const {message , targetUser} = JSON.parse(data) as WsMessagePayload
-        console.log(`Received message from user ${userId}: ${message}`);
-        if (message && targetUser) {
-          const targetSocket = clients.get(targetUser)
+      connection.on('message', async (data: string) => {
+        const {message , receiver} = JSON.parse(data) as ChatHistoryType
+        // console.log(`Received message from user ${userId}: ${message}`);
+        if (message && receiver) {
+          const targetSocket = clients.get(receiver)
           if (targetSocket) {
-            const sendPayload = {
+            const sendPayload : ChatHistoryType = {
               sender: userId,
+              receiver,
               message: message
             }
+            await ChatHistory.create(sendPayload)
             targetSocket.send(JSON.stringify(sendPayload))
           }
         }

@@ -15,7 +15,8 @@ export interface Friend {
   picturePath: String
 }
 
-export interface WsMessagePayload {
-  targetUser: string;
+export interface ChatHistoryType {
+  sender: string;
+  receiver: string;
   message: string;
 }
