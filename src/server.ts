@@ -63,8 +63,8 @@ app.use('/users', userRoutes)
 app.use('/posts', postRoutes)
 app.use('/chats', chatHistoryRoutes)
 
-const port = process.env.PORT || 8080
-const server = app.listen(port, ()=>{
+const port = parseInt(process.env.PORT || "8080", 10);
+const server = app.listen(port, '0.0.0.0', ()=>{
   console.log(`Start server at port : ${port}`)
   // User.insertMany(users);
   // Post.insertMany(posts);
